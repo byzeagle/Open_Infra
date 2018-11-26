@@ -36,10 +36,7 @@ struct variant : public boost::variant<Types...>
 
 	operator int()
 	{	
-		if (v != IFC_3)
-			return get<int>(*this);
-		else
-			throw std::invalid_argument("received negative value");
+		return get<int>(*this);
 	}
 
 	operator double()

@@ -31,6 +31,7 @@ struct ifclogical
 
 	friend ostream & operator << (ostream& os, const ifclogical & obj);
 };
+
 struct ifcinteger
 {
 	int val = 0;

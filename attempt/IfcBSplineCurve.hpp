@@ -6,30 +6,24 @@
 #include "type.hpp"
 #include <string>
 
+#include "IfcBSplineCurveForm.hpp"
+#include "IfcCartesianPoint.hpp"
+#include "IfcCurve.hpp"
+
 using boost::get;
-
-struct IfcCartesianPoint
-{
-
-};
-
-struct IfcBSplineCurveForm
-{
-
-};
 
 // Dummy Declaration
 template <Version T>
 struct IfcBSplineCurve { };
 
 template<>
-struct IfcBSplineCurve<IFC_1>
+struct IfcBSplineCurve<IFC_1> : public IfcCurve<IFC_1>
 {
 	static constexpr Version version = IFC_1;
 
 	int Degree;
-	IfcCartesianPoint ControlPointsList[2];
-	IfcBSplineCurveForm CurveForm;
+	IfcCartesianPoint<IFC_1> ControlPointsList[2];
+	IfcBSplineCurveForm<IFC_1> CurveForm;
 	bool ClosedCurve;
 	bool SelfIntersect;
 
@@ -37,13 +31,13 @@ struct IfcBSplineCurve<IFC_1>
 };
 
 template<>
-struct IfcBSplineCurve<IFC_2>
+struct IfcBSplineCurve<IFC_2> : public IfcCurve<IFC_2>
 {
 	static constexpr Version version = IFC_2;
 
 	int Degree;
-	IfcCartesianPoint ControlPointsList[2];
-	IfcBSplineCurveForm CurveForm;
+	IfcCartesianPoint<IFC_2> ControlPointsList[2];
+	IfcBSplineCurveForm<IFC_2> CurveForm;
 	bool ClosedCurve;
 	bool SelfIntersect;
 
@@ -51,13 +45,13 @@ struct IfcBSplineCurve<IFC_2>
 };
 
 template<>
-struct IfcBSplineCurve<IFC_3>
+struct IfcBSplineCurve<IFC_3> : public IfcCurve <IFC_3>
 {
 	static constexpr Version version = IFC_3;
 
 	ifcinteger Degree;
-	IfcCartesianPoint ControlPointsList[2];
-	IfcBSplineCurveForm CurveForm;
+	IfcCartesianPoint<IFC_3> ControlPointsList[2];
+	IfcBSplineCurveForm<IFC_3> CurveForm;
 	ifclogical ClosedCurve;
 	ifclogical SelfIntersect;
 
@@ -65,13 +59,13 @@ struct IfcBSplineCurve<IFC_3>
 };
 
 template<>
-struct IfcBSplineCurve<Common>
+struct IfcBSplineCurve<Common> : public IfcCurve <IFC_3>
 {
 	Version version = Common;
 
 	variant<int, ifcinteger> Degree;
-	IfcCartesianPoint ControlPointsList[2];
-	IfcBSplineCurveForm CurveForm;
+	IfcCartesianPoint<Common> ControlPointsList[2];
+	IfcBSplineCurveForm<Common> CurveForm;
 	variant<bool, ifclogical> ClosedCurve;
 	variant<bool, ifclogical> SelfIntersect;
 
