@@ -5,6 +5,7 @@
 #include "info.h"
 #include "type.hpp"
 #include <string>
+#include "property.hpp"
 
 #include "IfcBSplineCurveForm.hpp"
 #include "IfcCartesianPoint.hpp"
@@ -63,13 +64,38 @@ struct IfcBSplineCurve<Common> : public IfcCurve <IFC_3>
 {
 	Version version = Common;
 
-	variant<int, ifcinteger> Degree;
+	//Property<variant<int, ifcinteger>> Degree;
+
+	struct : public Property<variant<int, ifcinteger>>
+	{
+		virtual variant<int, ifcinteger> & operator = (const variant<int, ifcinteger> & f) 
+		{ 
+			return value = f; 
+		}
+
+		virtual operator int ()
+		{ 
+			if (version != IFC_3)
+				return get<int>(value);
+			else
+				throw "FUCK";
+		}
+
+		virtual operator ifcinteger const & () const
+		{
+			if (version == IFC_3)
+				return get<ifcinteger>(value);
+			else
+				throw "FUCK";
+		}
+
+	} Degree2;
+
 	IfcCartesianPoint<Common> ControlPointsList[2];
 	IfcBSplineCurveForm<Common> CurveForm;
+
 	variant<bool, ifclogical> ClosedCurve;
 	variant<bool, ifclogical> SelfIntersect;
-
-	IfcBSplineCurve() : Degree(version), ClosedCurve(version), SelfIntersect(version){ }
 
 	IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_1> & obj);
 	IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_2> & obj);
@@ -79,14 +105,18 @@ struct IfcBSplineCurve<Common> : public IfcCurve <IFC_3>
 IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_1> & obj)
 {
 	version = IFC_1;
-	Degree = obj.Degree;
-	Degree.v = version;
+	//Degree = obj.Degree;
+	//Degree.version = version;
+
+	Degree2.version = version;
+	Degree2.value = obj.Degree;
+
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
+	
 	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
+
 
 	return *this;
 }
@@ -94,36 +124,36 @@ IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineC
 IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_2> & obj)
 {
 	version = IFC_2;
-	Degree = obj.Degree;
-	Degree.v = version;
+	//Degree = obj.Degree;
+	//Degree.version = version;
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
 	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
-
+	
 	return *this;
 }
 
 IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_3> & obj)
 {
 	version = IFC_3;
-	Degree = obj.Degree;
-	Degree.v = version;
+	//Degree = obj.Degree;
+	//Degree.version = version;
+
+	Degree2.version = version;
+	Degree2.value = obj.Degree;
+
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
 	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
 
 	return *this;
 }
 
 IfcBSplineCurve<IFC_1> & IfcBSplineCurve<IFC_1>::operator = (const IfcBSplineCurve<Common> & obj)
 {
-	Degree = get<int>(obj.Degree);
+	//Degree = get<int>(obj.Degree.value);
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = get<bool>(obj.ClosedCurve);
@@ -134,7 +164,7 @@ IfcBSplineCurve<IFC_1> & IfcBSplineCurve<IFC_1>::operator = (const IfcBSplineCur
 
 IfcBSplineCurve<IFC_2> & IfcBSplineCurve<IFC_2>::operator = (const IfcBSplineCurve<Common> & obj)
 {
-	Degree = get<int>(obj.Degree);
+	//Degree = get<int>(obj.Degree.value);
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = get<bool>(obj.ClosedCurve);
@@ -145,7 +175,7 @@ IfcBSplineCurve<IFC_2> & IfcBSplineCurve<IFC_2>::operator = (const IfcBSplineCur
 
 IfcBSplineCurve<IFC_3> & IfcBSplineCurve <IFC_3>::operator = (const IfcBSplineCurve<Common> & obj)
 {
-	Degree = get<ifcinteger>(obj.Degree);
+	//Degree = get<ifcinteger>(obj.Degree.value);
 	//ControlPointsList = obj.ControlPointsList;
 	//CurveForm = obj.CurveForm;
 	ClosedCurve = get<ifclogical>(obj.ClosedCurve);
