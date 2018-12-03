@@ -2,6 +2,7 @@
 #define TYPE_HPP
 
 #include "variant.hpp"
+#include "property.hpp"
 #include <iostream>
 
 using std::ostream;
@@ -34,15 +35,31 @@ struct ifclogical
 
 struct ifcinteger
 {
-	int val = 0;
+	int val;
 
 	ifcinteger() : val(0) {}
 
-	template <typename ... Args>
-	ifcinteger(const variant<Args...> & obj);
+	// Constructors
 
-	template <typename ... Args>
-	ifcinteger & operator = (const variant<Args...> & obj);
+	//template <typename ... Args>
+	//ifcinteger(const variant<Args...> & obj);
+
+	//template <typename T>
+	//ifcinteger(const Property<T> & obj);
+
+	//template <typename ... Args>
+	//ifcinteger & operator = (const variant<Args...> & obj);
+
+	//template <typename T>
+	//ifcinteger & operator = (const Property<T> & obj);
+
+	ifcinteger(const ifcinteger & i) : val(i.val) {}
+
+	ifcinteger & operator = (const int n)
+	{
+		val = n;
+		return (*this);
+	}
 
 	ifcinteger & operator = (const ifcinteger & obj)
 	{
@@ -50,7 +67,7 @@ struct ifcinteger
 		return (*this);
 	}
 
-	operator int() 
+	operator int()
 	{
 		return val;
 	}
@@ -61,26 +78,39 @@ struct ifcinteger
 template<typename ... Args>
 ifclogical::ifclogical(const variant<Args...> & obj)
 {
-	val = boost::get<bool>(obj);
+	ifclogical x = get<ifclogical>(obj);
+	val = x.val;
 }
 
 template<typename ... Args>
 ifclogical & ifclogical::operator =(const variant<Args...> & obj)
 {
-	val = boost::get<bool>(obj);
+	//val = get<bool>(obj);
 }
 
-template<typename ... Args>
-ifcinteger::ifcinteger(const variant<Args...> & obj)
-{
-	val = boost::get<int>(obj);
-}
+//template<typename ... Args>
+//ifcinteger::ifcinteger(const variant<Args...> & obj)
+//{
+//	val = boost::get<int>(obj);
+//}
 
-template <typename ... Args>
-ifcinteger & ifcinteger::operator = (const variant<Args...> & obj)
-{
-	val = boost::get<int>(obj);
-}
+//template <typename T>
+//ifcinteger::ifcinteger(const Property<T> & obj)
+//{
+//	val = get<int>(obj.value);
+//}
+
+//template <typename ... Args>
+//ifcinteger & ifcinteger::operator = (const variant<Args...> & obj)
+//{
+//	val = boost::get<int>(obj);
+//}
+
+//template <typename T>
+//ifcinteger & ifcinteger::operator = (const Property<T> & obj)
+//{
+	//val = obj.val;
+//}
 
 std::ostream & operator << (std::ostream & os, const ifcinteger & obj)
 {
