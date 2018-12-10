@@ -29,6 +29,8 @@ std::string display(Version v)
 	}
 }
 
+using IfcBSplineCurve = Ifc::IfcBSplineCurve<Common>;
+
 // Compute B-Spline basis functions for given curve value t
 static void computeBSplineBasisFunctions(
 	const uint8_t order, // k: order of basis and polynomial of degree k - 1
@@ -98,7 +100,7 @@ static void computeBSplineCurve(
 	const uint8_t order,
 	const uint32_t numCurvePoints,
 	const uint32_t numControlPoints,
-	const std::vector<std::array<double,3>>& controlPoints,
+	const std::vector<std::array<double, 3>>& controlPoints,
 	const std::vector<double>& weights,
 	const std::vector<double>& knotVector,
 	std::vector<std::array<double, 3>>& curvePoints)
@@ -170,8 +172,8 @@ static void computeBSplineCurve(
 	}
 }
 
-template <Version T> void convertIfcBSplineCurve(
-	const std::shared_ptr<IfcBSplineCurve<T>>& splineCurve,
+void convertIfcBSplineCurve(
+	const std::shared_ptr<IfcBSplineCurve<Common>>& splineCurve,
 	const std::vector<std::array<double, 3>>& controlPoints,
 	std::vector<std::array<double, 3>>& loops)
 {
@@ -185,53 +187,53 @@ template <Version T> void convertIfcBSplineCurve(
 
 	std::vector<double> weights;
 
-	std::shared_ptr<IfcBSplineCurveWithKnots<T>> bspline =
-		std::dynamic_pointer_cast<IfcBSplineCurveWithKnots<T>>(splineCurve);
-	
+	std::shared_ptr<IfcBSplineCurveWithKnots<Common>> bspline =
+		std::dynamic_pointer_cast<IfcBSplineCurveWithKnots<Common>>(splineCurve);
+
 	if (bspline)
 	{
-		const auto& knotMults = bspline->KnotMultiplicities;
-		const std::vector<std::shared_ptr<IfcParameterValue<T>>>& splineKnots = bspline->Knots;
+		auto& knotMults = bspline->KnotMultiplicities;
+		const std::vector<std::shared_ptr<IfcParameterValue<Common>>>& splineKnots = bspline->Knots;
 		//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
-		
+
 		if (knotMults.size() != splineKnots.size())
 		{
 			std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
 			return;
 		}
-		
+
 		// obtain knots
 		for (int i = 0; i < splineKnots.size(); ++i)
 		{
 			double knot = splineKnots[i]->m_value;
-			const auto knotMult = knotMults[i];
+			int knotMult = knotMults[i];
 			// look at the multiplicity of the current knot
 			for (int j = 0; j < knotMult; ++j)
 			{
 				knots.push_back(knot);
 			}
 		}
-		
+
 		//! TEMPORARY default number of curve points
 		const uint8_t numCurvePoints = numKnots * 10;
 		std::vector<std::array<double, 3>> curvePoints;
 		curvePoints.reserve(numCurvePoints);
-		
+
 		computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weights, knots, curvePoints);
-		
-		//GeomUtils::appendPointsToCurve(curvePoints, loops);
+
+		loops.insert(loops.end(), curvePoints.begin(), curvePoints.end());
 	}
 }
 
-template <Version T> void convertIfcCartesianPointVector(
-	const std::vector<std::shared_ptr<IfcCartesianPoint<T>>>& points,
+void convertIfcCartesianPointVector(
+	const std::vector<std::shared_ptr<IfcCartesianPoint<Common>>>& points,
 	std::vector<std::array<double, 3>>& loop)
 {
 	const double length_factor = 1.0;
 	const unsigned int num_points = points.size();
 
 	for (unsigned int i_point = 0; i_point < num_points; ++i_point) {
-		const std::vector<std::shared_ptr<IfcLengthMeasure<T>>>& coords =
+		const std::vector<std::shared_ptr<IfcLengthMeasure<Common>>>& coords =
 			points[i_point]->m_Coordinates;
 
 		if (coords.size() > 2) {
@@ -255,12 +257,12 @@ template <Version T> void convertIfcCartesianPointVector(
 	}
 }
 
-template <Version T> void convertIfcCurve(std::shared_ptr<IfcBSplineCurve<T>> bspline_curve,
+void convertIfcCurve(std::shared_ptr<IfcBSplineCurve<Common>> bspline_curve,
 	std::vector<std::array<double, 3>>& targetVec) {
-	std::vector<std::shared_ptr<IfcCartesianPoint<T>>> &points = std::vector<std::shared_ptr<IfcCartesianPoint<T>>>();
+	std::vector<std::shared_ptr<IfcCartesianPoint<Common>>> &points = std::vector<std::shared_ptr<IfcCartesianPoint<Common>>>();
 
-	points.push_back(std::make_shared<IfcCartesianPoint<T>>(bspline_curve->ControlPointsList[0]));
-	points.push_back(std::make_shared<IfcCartesianPoint<T>>(bspline_curve->ControlPointsList[1]));
+	points.push_back(std::make_shared<IfcCartesianPoint<Common>>(bspline_curve->ControlPointsList[0]));
+	points.push_back(std::make_shared<IfcCartesianPoint<Common>>(bspline_curve->ControlPointsList[1]));
 
 	std::vector<std::array<double, 3>> splinePoints;
 	splinePoints.reserve(points.size());
@@ -270,8 +272,28 @@ template <Version T> void convertIfcCurve(std::shared_ptr<IfcBSplineCurve<T>> bs
 	return;
 }
 
-int main()
-{
+
+
+
+int main() {
+
+	// Construct ifc1 curve.
+	IfcBSplineCurve<IFC_1> ifc1Curve;
+	ifc1Curve.Degree = 2;
+	ifc1Curve.ClosedCurve = false;
+
+	// Construct Common curve and initialize it with the ifc1curve.
+	//IfcBSplineCurve<Common> curve;
+	//curve = ifc1Curve;
+
+	std::shared_ptr<IfcBSplineCurve<Common>> curve_ptr = std::make_shared<IfcBSplineCurve<Common>>();
+	*curve_ptr = ifc1Curve;
+
+	// Initialize targetVec.
+	std::vector<std::array<double, 3>> targetVec;
+
+	convertIfcCurve(curve_ptr, targetVec);
+
 	IfcBSplineCurve<IFC_1> ifc1;
 
 	ifc1.ClosedCurve = false;
@@ -279,10 +301,12 @@ int main()
 	ifc1.SelfIntersect = false;
 
 	IfcBSplineCurve<IFC_2> ifc2;
+	ifc2.Degree = 1337;
 
 	//ifc2 = ifc1;  // Error
 
 	IfcBSplineCurve<IFC_3> ifc3;
+	ifc3.Degree = 42;
 
 	IfcBSplineCurve<Common> superset;
 
@@ -305,26 +329,9 @@ int main()
 	ifclogical b = superset.SelfIntersect;
 	int x = superset.Degree;
 
-	cout << "Superset Version : " << display(superset.version) << endl;
-	cout << "Value of x is : " << x << endl;
-	cout << "Value of k is : " << k << endl;
-	cout << "Value of b is : " << b << endl;
-
-
-	superset = ifc1;
-	std::vector<std::array<double, 3>> targetVec;
-	
-	std::shared_ptr<IfcBSplineCurve<Common>> superset_ptr = std::shared_ptr<IfcBSplineCurve<Common>>(&superset);
-	std::shared_ptr<IfcBSplineCurve<IFC_1>> ifc1_ptr= std::shared_ptr<IfcBSplineCurve<IFC_1>>(&ifc1);
-	std::shared_ptr<IfcBSplineCurve<IFC_2>> ifc2_ptr = std::shared_ptr<IfcBSplineCurve<IFC_2>>(&ifc2);
-	std::shared_ptr<IfcBSplineCurve<IFC_3>> ifc3_ptr = std::shared_ptr<IfcBSplineCurve<IFC_3>>(&ifc3);
-
-	convertIfcCurve(superset_ptr,targetVec);
-	convertIfcCurve(ifc1_ptr,targetVec);
-	convertIfcCurve(ifc2_ptr,targetVec);
-	convertIfcCurve(ifc3_ptr,targetVec);
-
-	system("PAUSE");
+	variant<double, int> var;
+	var = 52.1;
+	ifcinteger intvar = var;
 
 	return 0;
 }

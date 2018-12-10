@@ -8,8 +8,8 @@ project ("attempt")
 set(CMAKE_CXX_STANDARD 11)
 
 # Find Boost and Include it in the program
-set(BOOST_ROOT "C:/Program Files/boost/boost_1_68_0")
-find_package(Boost 1.68.0)
+#set(BOOST_ROOT "C:/Program Files/boost/boost_1_68_0")
+find_package(Boost 1.65.1)
 IF (Boost_FOUND)
     INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 ENDIF()

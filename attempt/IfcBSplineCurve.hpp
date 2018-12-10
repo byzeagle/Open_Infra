@@ -12,146 +12,160 @@
 
 using boost::get;
 
-// Dummy Declaration
-template <Version T>
-struct IfcBSplineCurve { };
+namespace Ifc {
 
-template<>
-struct IfcBSplineCurve<IFC_1> : public IfcCurve<IFC_1>
-{
-	static constexpr Version version = IFC_1;
+	// Dummy Declaration
+	template <Version T>
+	struct IfcBSplineCurve { };
 
-	int Degree;
-	IfcCartesianPoint<IFC_1> ControlPointsList[2];
-	IfcBSplineCurveForm<IFC_1> CurveForm;
-	bool ClosedCurve;
-	bool SelfIntersect;
+	template<>
+	struct IfcBSplineCurve<IFC_1> : public IfcCurve<IFC_1>
+	{
+		static constexpr Version version = IFC_1;
 
-	IfcBSplineCurve<IFC_1> & operator = (const IfcBSplineCurve<Common> & obj);
-};
+		int Degree = 0;
+		IfcCartesianPoint<IFC_1> ControlPointsList[2];
+		IfcBSplineCurveForm<IFC_1> CurveForm;
+		bool ClosedCurve;
+		bool SelfIntersect;
 
-template<>
-struct IfcBSplineCurve<IFC_2> : public IfcCurve<IFC_2>
-{
-	static constexpr Version version = IFC_2;
+		IfcBSplineCurve() = default;
+		virtual ~IfcBSplineCurve() {};
 
-	int Degree;
-	IfcCartesianPoint<IFC_2> ControlPointsList[2];
-	IfcBSplineCurveForm<IFC_2> CurveForm;
-	bool ClosedCurve;
-	bool SelfIntersect;
+		IfcBSplineCurve<IFC_1> & operator = (const IfcBSplineCurve<Common> & obj);
+	};
 
-	IfcBSplineCurve<IFC_2> & operator = (const IfcBSplineCurve<Common> & obj);
-};
+	template<>
+	struct IfcBSplineCurve<IFC_2> : public IfcCurve<IFC_2>
+	{
+		static constexpr Version version = IFC_2;
 
-template<>
-struct IfcBSplineCurve<IFC_3> : public IfcCurve <IFC_3>
-{
-	static constexpr Version version = IFC_3;
+		int Degree = 0;
+		IfcCartesianPoint<IFC_2> ControlPointsList[2];
+		IfcBSplineCurveForm<IFC_2> CurveForm;
+		bool ClosedCurve;
+		bool SelfIntersect;
 
-	ifcinteger Degree;
-	IfcCartesianPoint<IFC_3> ControlPointsList[2];
-	IfcBSplineCurveForm<IFC_3> CurveForm;
-	ifclogical ClosedCurve;
-	ifclogical SelfIntersect;
+		IfcBSplineCurve() = default;
+		virtual ~IfcBSplineCurve() {};
 
-	IfcBSplineCurve<IFC_3> & operator = (const IfcBSplineCurve<Common> & obj);
-};
+		IfcBSplineCurve<IFC_2> & operator = (const IfcBSplineCurve<Common> & obj);
+	};
 
-template<>
-struct IfcBSplineCurve<Common> : public IfcCurve <IFC_3>
-{
-	Version version = Common;
+	template<>
+	struct IfcBSplineCurve<IFC_3> : public IfcCurve <IFC_3>
+	{
+		static constexpr Version version = IFC_3;
 
-	variant<int, ifcinteger> Degree;
-	IfcCartesianPoint<Common> ControlPointsList[2];
-	IfcBSplineCurveForm<Common> CurveForm;
-	variant<bool, ifclogical> ClosedCurve;
-	variant<bool, ifclogical> SelfIntersect;
+		ifcinteger Degree;
+		IfcCartesianPoint<IFC_3> ControlPointsList[2];
+		IfcBSplineCurveForm<IFC_3> CurveForm;
+		ifclogical ClosedCurve;
+		ifclogical SelfIntersect;
 
-	IfcBSplineCurve() : Degree(version), ClosedCurve(version), SelfIntersect(version){ }
+		IfcBSplineCurve() = default;
+		virtual ~IfcBSplineCurve() {};
 
-	IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_1> & obj);
-	IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_2> & obj);
-	IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_3> & obj);
-};
+		IfcBSplineCurve<IFC_3> & operator = (const IfcBSplineCurve<Common> & obj);
+	};
 
-IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_1> & obj)
-{
-	version = IFC_1;
-	Degree = obj.Degree;
-	Degree.v = version;
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
-	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
+	template<>
+	struct IfcBSplineCurve<Common> : public IfcCurve <Common>
+	{
+		Version version = Common;
 
-	return *this;
-}
+		variant<int, ifcinteger> Degree;
+		IfcCartesianPoint<Common> ControlPointsList[2];
+		IfcBSplineCurveForm<Common> CurveForm;
+		variant<bool, ifclogical> ClosedCurve;
+		variant<bool, ifclogical> SelfIntersect;
 
-IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_2> & obj)
-{
-	version = IFC_2;
-	Degree = obj.Degree;
-	Degree.v = version;
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
-	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
+		IfcBSplineCurve() : Degree(version), ClosedCurve(version), SelfIntersect(version) { }
 
-	return *this;
-}
+		virtual ~IfcBSplineCurve() {};
 
-IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_3> & obj)
-{
-	version = IFC_3;
-	Degree = obj.Degree;
-	Degree.v = version;
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = obj.ClosedCurve;
-	ClosedCurve.v = version;
-	SelfIntersect = obj.SelfIntersect;
-	SelfIntersect.v = version;
+		IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_1> & obj);
+		IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_2> & obj);
+		IfcBSplineCurve<Common> & operator = (const IfcBSplineCurve<IFC_3> & obj);
+	};
 
-	return *this;
-}
+	IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_1> & obj)
+	{
+		version = IFC_1;
+		Degree = obj.Degree;
+		Degree.v = version;
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = obj.ClosedCurve;
+		ClosedCurve.v = version;
+		SelfIntersect = obj.SelfIntersect;
+		SelfIntersect.v = version;
 
-IfcBSplineCurve<IFC_1> & IfcBSplineCurve<IFC_1>::operator = (const IfcBSplineCurve<Common> & obj)
-{
-	Degree = get<int>(obj.Degree);
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = get<bool>(obj.ClosedCurve);
-	SelfIntersect = get<bool>(obj.SelfIntersect);
+		return *this;
+	}
 
-	return *this;
-}
+	IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_2> & obj)
+	{
+		version = IFC_2;
+		Degree = obj.Degree;
+		Degree.v = version;
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = obj.ClosedCurve;
+		ClosedCurve.v = version;
+		SelfIntersect = obj.SelfIntersect;
+		SelfIntersect.v = version;
 
-IfcBSplineCurve<IFC_2> & IfcBSplineCurve<IFC_2>::operator = (const IfcBSplineCurve<Common> & obj)
-{
-	Degree = get<int>(obj.Degree);
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = get<bool>(obj.ClosedCurve);
-	SelfIntersect = get<bool>(obj.SelfIntersect);
+		return *this;
+	}
 
-	return *this;
-}
+	IfcBSplineCurve<Common> & IfcBSplineCurve<Common>::operator = (const IfcBSplineCurve<IFC_3> & obj)
+	{
+		version = IFC_3;
+		Degree = obj.Degree;
+		Degree.v = version;
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = obj.ClosedCurve;
+		ClosedCurve.v = version;
+		SelfIntersect = obj.SelfIntersect;
+		SelfIntersect.v = version;
 
-IfcBSplineCurve<IFC_3> & IfcBSplineCurve <IFC_3>::operator = (const IfcBSplineCurve<Common> & obj)
-{
-	Degree = get<ifcinteger>(obj.Degree);
-	//ControlPointsList = obj.ControlPointsList;
-	//CurveForm = obj.CurveForm;
-	ClosedCurve = get<ifclogical>(obj.ClosedCurve);
-	SelfIntersect = get<ifclogical>(obj.SelfIntersect);
+		return *this;
+	}
 
-	return *this;
+	IfcBSplineCurve<IFC_1> & IfcBSplineCurve<IFC_1>::operator = (const IfcBSplineCurve<Common> & obj)
+	{
+		Degree = get<int>(obj.Degree);
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = get<bool>(obj.ClosedCurve);
+		SelfIntersect = get<bool>(obj.SelfIntersect);
+
+		return *this;
+	}
+
+	IfcBSplineCurve<IFC_2> & IfcBSplineCurve<IFC_2>::operator = (const IfcBSplineCurve<Common> & obj)
+	{
+		Degree = get<int>(obj.Degree);
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = get<bool>(obj.ClosedCurve);
+		SelfIntersect = get<bool>(obj.SelfIntersect);
+
+		return *this;
+	}
+
+	IfcBSplineCurve<IFC_3> & IfcBSplineCurve <IFC_3>::operator = (const IfcBSplineCurve<Common> & obj)
+	{
+		Degree = get<ifcinteger>(obj.Degree);
+		//ControlPointsList = obj.ControlPointsList;
+		//CurveForm = obj.CurveForm;
+		ClosedCurve = get<ifclogical>(obj.ClosedCurve);
+		SelfIntersect = get<ifclogical>(obj.SelfIntersect);
+
+		return *this;
+	}
 }
 
 #endif

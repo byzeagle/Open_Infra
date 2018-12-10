@@ -50,6 +50,12 @@ struct ifcinteger
 		return (*this);
 	}
 
+	ifcinteger & operator = (const int & obj)
+	{
+		val = obj;
+		return (*this);
+	}
+
 	operator int() 
 	{
 		return val;
