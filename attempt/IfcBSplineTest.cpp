@@ -29,7 +29,6 @@ std::string display(Version v)
 	}
 }
 
-using IfcBSplineCurve = Ifc::IfcBSplineCurve<Common>;
 
 // Compute B-Spline basis functions for given curve value t
 static void computeBSplineBasisFunctions(
